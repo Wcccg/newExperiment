@@ -1,6 +1,7 @@
 import math
 import random
 
+
 # 使用 UUNIFast 算法生成利用率
 def getU(n, USum):
     U = []
@@ -11,6 +12,7 @@ def getU(n, USum):
         sumU = nextSumU
     U.append(sumU)
     return U
+
 
 # 生成周期 bound > e
 def getT(n, bound):
@@ -37,20 +39,43 @@ def getT(n, bound):
         T.append(random.uniform(x, y))
     return T
 
+
 # 生成执行时间，更新利用率
 def getC(n, U, T):
     C = []
     UU = []
     for i in range(0, n):
-        c = math.floor(T[i] * U[i])
+        c = math.ceil(T[i] * U[i])
         UU.append(c / T[i])
         C.append(c)
     return C, U
 
+
+# 生成deadline
+def getD(n, C, T):
+    D = []
+    for i in range(0, n):
+        if C[i] < 10:
+            a = C[i]
+        elif C[i] < 100 and C[i] >= 10:
+            a = 2 * C[i]
+        elif C[i] < 1000 and C[i] >= 100:
+            a = 3 * C[i]
+        else:
+            a = 4 * C[i]
+        b = 1.2 * T[i]
+        D.append(int(random.uniform(a, b)))
+    return D
+
+
 if __name__ == '__main__':
-    U = getU(15, 0.85)
-    T = getT(15, 100000)
-    C, U = getC(15, U, T)
-    print('C', C)
-    print('U', U)
-    print('T', T)
+    n = 100
+    sumU = 0.85
+    Tmax = 100000
+    U = getU(n, sumU)
+    T = getT(n, Tmax)
+    C, U = getC(n, U, T)
+    D = getD(n, C, T)
+    print(C)
+    print(U)
+    print(D)
