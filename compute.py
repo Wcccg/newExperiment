@@ -49,16 +49,17 @@ def getUpBound(t, C, D, T, n):
         uB = uB + ub
     return uB
 
-# 获取某一坐标下的上界函数
-def getB(tt, t, C, D, T, n):
-    B = 0
+# 获取某一坐标下的上界函数参数
+def getB(tt, C, D, T, n):
+    a = 0
+    b = 0
     for i in range(0, n):
         if (tt - D[i]) % T[i] != 0 or tt < D[i]:
-            b = max(0, 1 + math.floor((tt - D[i]) / T[i])) * C[i]
+            b += max(0, 1 + math.floor((tt - D[i]) / T[i])) * C[i]
         else:
-            b = C[i] / T[i] * (t - D[i]) + C[i]
-        B = B + b
-    return B
+            a += C[i] / T[i]
+            b += C[i] - C[i] * D[i] / T[i]
+    return a, b
 
 # 获取 dmin
 def getdmin(D, T, n):
@@ -79,6 +80,22 @@ def getdmax(X, D, T, n):
                 m = -1
         dmax = max(dmax, m)
     return dmax
+
+# 同时返回该拐点编号
+def getdmax2(X, D, T, n):
+    dmax = -1
+    index = 0
+    for i in range(0, n):
+        m = int(X / T[i]) * T[i] + D[i]
+        while m >= X:
+            if m >= T[i] + D[i]:
+                m = m - T[i]
+            else:
+                m = -1
+        if m > dmax:
+            dmax = m
+            index = i
+    return dmax, i
 
 # 使用 QPA 算法进行跳转
 def useQPA(C, D, T, n, dmin, L):
@@ -104,7 +121,6 @@ def useQPA(C, D, T, n, dmin, L):
 # 使用上界线思路进行跳转
 def useUpBound(C, D, T, n, dmin, L, sumU):
     count = 0       # 记录跳转次数
-    t = sympy.Symbol('t')
     Dmax = -1
     for i in range(0, n):
         Dmax = max(Dmax, D[i])
@@ -124,14 +140,14 @@ def useUpBound(C, D, T, n, dmin, L, sumU):
     # print('count = ', count, ' , h = ', h, ' , t = ', tt)
     while (h <= tt and h > dmin):
         count = count + 1
-        b = getB(tt, t, C, D, T, n)
-        tt = sympy.solve(b - t, t)[0]
-        tt = int(tt)
+        a, b = getB(tt, C, D, T, n)
+        tt = b / (1 - a)
         tt = getdmax(tt, D, T, n)
         if tt == -1:
             return 1, count
         h = getH(tt, C, D, T, n)
-        # print('count = ', count, ' , h = ', h, ' , t = ', tt)
+        # if count < 50:
+            # print('count = ', count, ' , h = ', h, ' , t = ', tt)
     if h <= dmin:       # 可调度返回 0
         return 0, count
     else:               # 不可调度返回 1 
