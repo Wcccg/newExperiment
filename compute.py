@@ -49,17 +49,20 @@ def getUpBound(t, C, D, T, n):
         uB = uB + ub
     return uB
 
-# 获取某一坐标下的上界函数参数
-def getB(tt, C, D, T, n):
+# 返回处理器需求函数，以及上界函数参数
+def getHB(t, C, D, T, n):
+    H = 0
     a = 0
     b = 0
     for i in range(0, n):
-        if (tt - D[i]) % T[i] != 0 or tt < D[i]:
-            b += max(0, 1 + math.floor((tt - D[i]) / T[i])) * C[i]
+        if (t - D[i]) % T[i] != 0 or t < D[i]:
+            b += max(0, 1 + math.floor((t - D[i]) / T[i])) * C[i]
         else:
             a += C[i] / T[i]
             b += C[i] - C[i] * D[i] / T[i]
-    return a, b
+        h = max(0, 1 + math.floor((t - D[i]) / T[i])) * C[i]
+        H = H + h
+    return H, a, b
 
 # 获取 dmin
 def getdmin(D, T, n):
@@ -99,10 +102,10 @@ def getdmax2(X, D, T, n):
 
 # 使用 QPA 算法进行跳转
 def useQPA(C, D, T, n, dmin, L):
+    print('L = ', L)
     count = 0       # 记录跳转次数
     t = getdmax(L, D, T, n)
     h = getH(t, C, D, T, n)
-    # print('count = ', count, ' , h = ', h, ' , t = ', t)
     while (h <= t and h > dmin):
         count = count + 1
         if h < t:
@@ -112,7 +115,6 @@ def useQPA(C, D, T, n, dmin, L):
             if t == -1:
                 return 1, count
         h = getH(t, C, D, T, n)
-        # print('count = ', count, ' , h = ', h, ' , t = ', t)
     if h <= dmin:       # 可调度返回 0
         return 0, count
     else:               # 不可调度返回 1 
@@ -135,19 +137,16 @@ def useUpBound(C, D, T, n, dmin, L, sumU):
         l = l / (1 - sumU)
         L = min(L, l)
     # 坐标跳转
+    print('L = ', L)
     tt = getdmax(L, D, T, n)
-    h = getH(tt, C, D, T, n)
-    # print('count = ', count, ' , h = ', h, ' , t = ', tt)
+    h, a, b = getHB(tt, C, D, T, n)
     while (h <= tt and h > dmin):
         count = count + 1
-        a, b = getB(tt, C, D, T, n)
-        tt = b / (1 - a)
+        tt = int(b / (1 - a))
         tt = getdmax(tt, D, T, n)
         if tt == -1:
             return 1, count
-        h = getH(tt, C, D, T, n)
-        # if count < 50:
-            # print('count = ', count, ' , h = ', h, ' , t = ', tt)
+        h, a, b = getHB(tt, C, D, T, n)
     if h <= dmin:       # 可调度返回 0
         return 0, count
     else:               # 不可调度返回 1 
