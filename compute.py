@@ -49,20 +49,14 @@ def getUpBound(t, C, D, T, n):
         uB = uB + ub
     return uB
 
-# 返回处理器需求函数，以及上界函数参数
-def getHB(t, C, D, T, n):
-    H = 0
+# 返回上界函数参数
+def getB(t, C, D, T, n):
     a = 0
     b = 0
     for i in range(0, n):
-        if (t - D[i]) % T[i] != 0 or t < D[i]:
-            b += max(0, 1 + math.floor((t - D[i]) / T[i])) * C[i]
-        else:
-            a += C[i] / T[i]
-            b += C[i] - C[i] * D[i] / T[i]
-        h = max(0, 1 + math.floor((t - D[i]) / T[i])) * C[i]
-        H = H + h
-    return H, a, b
+        a += (0 if ((t - D[i]) % T[i] != 0 or t < D[i]) else C[i] / T[i])
+        b += (max(0, 1 + math.floor((t - D[i]) / T[i])) * C[i] if ((t - D[i]) % T[i] != 0 or t < D[i]) else C[i] - C[i] * D[i] / T[i])
+    return a, b
 
 # 获取 dmin
 def getdmin(D, T, n):
@@ -139,15 +133,18 @@ def useUpBound(C, D, T, n, dmin, L, sumU):
     # 坐标跳转
     print('L = ', L)
     tt = getdmax(L, D, T, n)
-    h, a, b = getHB(tt, C, D, T, n)
-    while (h <= tt and h > dmin):
+    a, b = getB(tt, C, D, T, n)
+    t = b / (1 - a)
+    while (t <= tt and t > dmin):
         count = count + 1
-        tt = int(b / (1 - a))
+        tt = int(t)
         tt = getdmax(tt, D, T, n)
         if tt == -1:
             return 1, count
-        h, a, b = getHB(tt, C, D, T, n)
-    if h <= dmin:       # 可调度返回 0
+        a, b = getB(tt, C, D, T, n)
+        t = b / (1 - a)
+        print('tt = ', tt, 't = ', t)
+    if t <= dmin:       # 可调度返回 0
         return 0, count
     else:               # 不可调度返回 1 
         return 1, count 
