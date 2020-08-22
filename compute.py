@@ -2,21 +2,21 @@ import math
 import sympy
 
 # L 即 Tbound
-def getL(U, C, D, T, sU, n):
-    La = getLa(U, D, T, su, n)
+def getL(C, D, T, sumU, n):
+    La = getLa(C, D, T, sumU, n)
     Lb = getLb(C, T, n)
-    if sU == 1:
+    if sumU == 1:
         return Lb
     else:
         return min(La, Lb)
 
-def getLa(U, D, T, su, n):
+def getLa(C, D, T, sumU, n):
     La = -1
     m = 0
     for i in range(0, n):
         La = max(La, D[i])
-        m = m + (T[i] - D[i]) * U[i]
-    m = m / (1 - sU)
+        m = m + (T[i] - D[i]) * C[i] / T[i]
+    m = m / (1 - sumU)
     La = max(La, m)
     return La
 
@@ -61,41 +61,48 @@ def getB(tt, t, C, D, T, n):
     return B
 
 # 获取 dmin
-def getdmin(L, D, T, n):
+def getdmin(D, T, n):
     dmin = 1000000
     for i in range(0, n):
         dmin = min(dmin, D[i])
     return dmin
 
-# 获取距离 X 最近的拐点
+# 获取距离 X 最近的拐点，没有则返回 -1
 def getdmax(X, D, T, n):
     dmax = -1
     for i in range(0, n):
         m = int(X / T[i]) * T[i] + D[i]
-        if m >= X and m >= T[i]:
-            m = m - T[i]
+        while m >= X:
+            if m >= T[i] + D[i]:
+                m = m - T[i]
+            else:
+                m = -1
         dmax = max(dmax, m)
     return dmax
 
 # 使用 QPA 算法进行跳转
-def useQPA(C, D, T, n, dmin, dmax):
+def useQPA(C, D, T, n, dmin, L):
     count = 0       # 记录跳转次数
     t = getdmax(L, D, T, n)
     h = getH(t, C, D, T, n)
+    # print('count = ', count, ' , h = ', h, ' , t = ', t)
     while (h <= t and h > dmin):
         count = count + 1
         if h < t:
             t = h
         else:
             t = getdmax(t, D, T, n)
+            if t == -1:
+                return 1, count
         h = getH(t, C, D, T, n)
+        # print('count = ', count, ' , h = ', h, ' , t = ', t)
     if h <= dmin:       # 可调度返回 0
         return 0, count
     else:               # 不可调度返回 1 
         return 1, count 
 
 # 使用上界线思路进行跳转
-def useUpBound(C, D, T, n, dmin, L, U):
+def useUpBound(C, D, T, n, dmin, L, sumU):
     count = 0       # 记录跳转次数
     t = sympy.Symbol('t')
     Dmax = -1
@@ -108,18 +115,23 @@ def useUpBound(C, D, T, n, dmin, L, U):
     else:
         l = 0
         for i in range(0, n):
-            l = l + C[i] * D[i] / T[i] - C[i]
-        l = l / (1 - U)
+            l = l - C[i] * D[i] / T[i] + C[i]
+        l = l / (1 - sumU)
         L = min(L, l)
     # 坐标跳转
     tt = getdmax(L, D, T, n)
     h = getH(tt, C, D, T, n)
-    while h <= t and h > dmin:
+    # print('count = ', count, ' , h = ', h, ' , t = ', tt)
+    while (h <= tt and h > dmin):
         count = count + 1
         b = getB(tt, t, C, D, T, n)
         tt = sympy.solve(b - t, t)[0]
+        tt = int(tt)
         tt = getdmax(tt, D, T, n)
+        if tt == -1:
+            return 1, count
         h = getH(tt, C, D, T, n)
+        # print('count = ', count, ' , h = ', h, ' , t = ', tt)
     if h <= dmin:       # 可调度返回 0
         return 0, count
     else:               # 不可调度返回 1 

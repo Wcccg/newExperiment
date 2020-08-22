@@ -5,7 +5,7 @@ def readbase(filename):
         line = f.readline()
         line = line.split()
         for i in line:
-            base.append(float(i))
+            base.append(int(float(i)))
     return base
 
 
@@ -21,14 +21,7 @@ def readsample(filename):
             if not line:
                 break
             line = line.split()
-            print(line)
             C.append(float(line[0]))
             D.append(float(line[1]))
             T.append(float(line[2]))
     return C, D, T
-
-
-if __name__ == '__main__':
-    C, D, T = readsample("aurg.txt")
-    n, sumU, Tmax = readbase("aurg.txt")
-    print(C, D, T)
