@@ -55,9 +55,10 @@ def getB(t, C, D, T, n):
     a = 0
     b = 0
     for i in range(0, n):
-        a += (0 if ((t - D[i]) % T[i] != 0 or t < D[i]) else C[i] / T[i])
-        b += (max(0, 1 + math.floor((t - D[i]) / T[i])) * C[i] if ((t - D[i]) % T[i] != 0 or t < D[i]) else C[i] - C[i] * D[i] / T[i])
-    return a, b
+        flag = (((t - D[i]) % T[i] != 0 or t < D[i]) == True)
+        a += (0 if flag else C[i] / T[i])
+        b += (max(0, 1 + math.floor((t - D[i]) / T[i])) * C[i] if flag else C[i] - C[i] * D[i] / T[i])
+    return b / (1 - a)
 
 def getBI(I, t, C, D, T, n):
     a = C[I] / T[I]
@@ -77,12 +78,9 @@ def getdmin(D, T, n):
 def getdmax(X, D, T, n):
     dmax = -1
     for i in range(0, n):
-        m = int(X / T[i]) * T[i] + D[i]
-        while m >= X:
-            if m >= T[i] + D[i]:
-                m = m - T[i]
-            else:
-                m = -1
+        m = -2
+        if (X > D[i]):
+            m = int((X - D[i]) / T[i]) * T[i] + D[i]
         dmax = max(dmax, m)
     return dmax
 
@@ -91,12 +89,9 @@ def getdmax2(X, D, T, n):
     dmax = -1
     index = -1
     for i in range(0, n):
-        m = int(X / T[i]) * T[i] + D[i]
-        while m >= X:
-            if m >= T[i] + D[i]:
-                m = m - T[i]
-            else:
-                m = -1
+        m = -2
+        if (X > D[i]):
+            m = int((X - D[i]) / T[i]) * T[i] + D[i]
         if m > dmax:
             dmax = m
             index = i
@@ -116,6 +111,7 @@ def useQPA(C, D, T, n, dmin, L):
         else:
             t = getdmax(t, D, T, n)
         h = getH(t, C, D, T, n)
+        # print('h = ', h, 't = ', t)
     if h <= dmin:       # 可调度返回 0
         t2 = datetime.datetime.now()
         print('t = ', t2 - t1)
@@ -131,16 +127,18 @@ def useUpBound(C, D, T, n, dmin, L, sumU):
     Dmax = -1
     for i in range(0, n):
         Dmax = max(Dmax, D[i])
+    print(Dmax)
     # 区间优化
-    origin = getUpBound(Dmax, C, D, T, n)
-    if origin <= Dmax:
-        L = min(L, Dmax)
-    else:
-        l = 0
-        for i in range(0, n):
-            l = l - C[i] * D[i] / T[i] + C[i]
-        l = l / (1 - sumU)
-        L = min(L, l)
+    # origin = getUpBound(Dmax, C, D, T, n)
+    # print('origin', origin)
+    # if origin <= Dmax:
+    #     L = min(L, Dmax)
+    # else:
+    #     l = 0
+    #     for i in range(0, n):
+    #         l = l - C[i] * D[i] / T[i] + C[i]
+    #     l = l / (1 - sumU)
+    #     L = min(L, l)
     # 坐标跳转
     print('L = ', L)
     tt, I = getdmax2(L, D, T, n)
