@@ -8,6 +8,7 @@ def readbase(filename):
             base.append(float(i))
     return base
 
+
 # 读 C[], D[], T[]
 def readsample(filename):
     C = []
@@ -24,5 +25,10 @@ def readsample(filename):
             C.append(float(line[0]))
             D.append(float(line[1]))
             T.append(float(line[2]))
-            U.append(float(line[3]))
-    return C, D, T, U
+    return C, D, T
+
+
+if __name__ == '__main__':
+    C, D, T = readsample("aurg.txt")
+    n, sumU, Tmax = readbase("aurg.txt")
+    print(C, D, T)

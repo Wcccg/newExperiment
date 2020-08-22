@@ -73,12 +73,11 @@ def writefile(filename, C, D, T, n, sumU, Tmax):
         f.write(str(n) + " " + str(sumU) + " " + str(Tmax) + '\n')
         for i in range(0, lens):
             temp = round(U[i], 5)
-            stri = str(C[i]) + " " + str(D[i]) + " " + str(T[i]) + "\n"
+            stri = str(C[i]) + " " + str(D[i]) + " " + str(T[i]) +"\n"
             f.write(stri)
-    return 
 
 if __name__ == '__main__':
-    n = 100
+    n = 5
     sumU = 0.85
     Tmax = 100000
     U = getU(n, sumU)
