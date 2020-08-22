@@ -1,5 +1,6 @@
 import math
 import sympy
+import datetime
 
 # L 即 Tbound
 def getL(C, D, T, sumU, n):
@@ -58,6 +59,13 @@ def getB(t, C, D, T, n):
         b += (max(0, 1 + math.floor((t - D[i]) / T[i])) * C[i] if ((t - D[i]) % T[i] != 0 or t < D[i]) else C[i] - C[i] * D[i] / T[i])
     return a, b
 
+def getBI(I, t, C, D, T, n):
+    a = C[I] / T[I]
+    b = C[I] - C[I] * D[I] / T[I] - max(0, 1 + math.floor((t - D[I]) / T[I])) * C[I]
+    for i in range(0, n):
+        b += max(0, 1 + math.floor((t - D[i]) / T[i])) * C[i]
+    return b / (1 - a)
+
 # 获取 dmin
 def getdmin(D, T, n):
     dmin = 1000000
@@ -81,7 +89,7 @@ def getdmax(X, D, T, n):
 # 同时返回该拐点编号
 def getdmax2(X, D, T, n):
     dmax = -1
-    index = 0
+    index = -1
     for i in range(0, n):
         m = int(X / T[i]) * T[i] + D[i]
         while m >= X:
@@ -92,7 +100,7 @@ def getdmax2(X, D, T, n):
         if m > dmax:
             dmax = m
             index = i
-    return dmax, i
+    return dmax, index
 
 # 使用 QPA 算法进行跳转
 def useQPA(C, D, T, n, dmin, L):
@@ -100,18 +108,21 @@ def useQPA(C, D, T, n, dmin, L):
     count = 0       # 记录跳转次数
     t = getdmax(L, D, T, n)
     h = getH(t, C, D, T, n)
+    t1 = datetime.datetime.now()
     while (h <= t and h > dmin):
         count = count + 1
         if h < t:
             t = h
         else:
             t = getdmax(t, D, T, n)
-            if t == -1:
-                return 1, count
         h = getH(t, C, D, T, n)
     if h <= dmin:       # 可调度返回 0
+        t2 = datetime.datetime.now()
+        print('t = ', t2 - t1)
         return 0, count
     else:               # 不可调度返回 1 
+        t2 = datetime.datetime.now()
+        print('t = ', t2 - t1)
         return 1, count 
 
 # 使用上界线思路进行跳转
@@ -132,20 +143,20 @@ def useUpBound(C, D, T, n, dmin, L, sumU):
         L = min(L, l)
     # 坐标跳转
     print('L = ', L)
-    tt = getdmax(L, D, T, n)
-    a, b = getB(tt, C, D, T, n)
-    t = b / (1 - a)
+    tt, I = getdmax2(L, D, T, n)
+    t = getBI(I, tt, C, D, T, n)
+    t1 = datetime.datetime.now()
     while (t <= tt and t > dmin):
         count = count + 1
-        tt = int(t)
-        tt = getdmax(tt, D, T, n)
-        if tt == -1:
-            return 1, count
-        a, b = getB(tt, C, D, T, n)
-        t = b / (1 - a)
-        print('tt = ', tt, 't = ', t)
+        tt, I = getdmax2(t, D, T, n)
+        t = getBI(I, tt, C, D, T, n)
+        # print('tt = ', tt, 't = ', t)
     if t <= dmin:       # 可调度返回 0
+        t2 = datetime.datetime.now()
+        print('t = ', t2 - t1)
         return 0, count
     else:               # 不可调度返回 1 
+        t2 = datetime.datetime.now()
+        print('t = ', t2 - t1)
         return 1, count 
     
