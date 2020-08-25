@@ -104,11 +104,11 @@ def getdmax2(X, D, T, n):
 
 # 使用 QPA 算法进行跳转
 def useQPA(C, D, T, n, dmin, L):
-    print('L = ', L)
+    # print('L = ', L)
     count = 0       # 记录跳转次数
     t = getdmax(L, D, T, n)
     h = getH(t, C, D, T, n)
-    t1 = datetime.datetime.now()
+    # t1 = datetime.datetime.now()
     while (h <= t and h > dmin):
         count = count + 1
         if h < t:
@@ -119,12 +119,12 @@ def useQPA(C, D, T, n, dmin, L):
         # if count < 200:
         #     print('h = ', h, 't = ', t)
     if h <= dmin:       # 可调度返回 0
-        t2 = datetime.datetime.now()
-        print('t = ', t2 - t1)
+        # t2 = datetime.datetime.now()
+        # print('t = ', t2 - t1)
         return 0, count
     else:               # 不可调度返回 1 
-        t2 = datetime.datetime.now()
-        print('t = ', t2 - t1)
+        # t2 = datetime.datetime.now()
+        # print('t = ', t2 - t1)
         return 1, count 
 
 # 使用上界线思路进行跳转
@@ -166,11 +166,32 @@ def useUpBound(C, D, T, n, dmin, L, sumU):
     
 
 def getDistance(T, C, n, dis):
+    if T[0] > dis:
+        return dis
+    index = n
+    if T[n - 1] > dis:
+        a = 0
+        b = n
+        m = int((a + b) / 2)
+        if T[m] <= dis:
+            a = m
+            m = int((a + b) / 2)
+            while T[m] <= dis:
+                a = m
+                m = int((a + b) / 2)
+                if a == m:
+                    break
+            index = m
+        else:
+            b = m
+            m = int((a + b) / 2)
+            while T[m] > dis:
+                b = m
+                m = int((a + b) / 2)
+            index = b
     Dis = dis
-    for i in range(0, n):
+    for i in range(0, index):
         Dis += math.floor(dis / T[i]) * C[i]
-        if T[i] > dis:
-            break
     return Dis
 
 def getCDT(task, n):
@@ -191,11 +212,11 @@ def getCDT(task, n):
 # 增大跳转距离
 def useGreaterDistance(task, n, dmin, L):
     C, D, T = getCDT(task, n)
-    print('L = ', L)
+    # print('L = ', L)
     count = 0       # 记录跳转次数
     t = getdmax(L, D, T, n)
     h = getH(t, C, D, T, n)
-    t1 = datetime.datetime.now()
+    # t1 = datetime.datetime.now()
     while (h <= t and h > dmin):
         count = count + 1
         if h < t:
@@ -207,10 +228,10 @@ def useGreaterDistance(task, n, dmin, L):
         # if count < 200:
         #     print('h = ', h, 't = ', t)
     if h <= dmin:       # 可调度返回 0
-        t2 = datetime.datetime.now()
-        print('t = ', t2 - t1)
+        # t2 = datetime.datetime.now()
+        # print('t = ', t2 - t1)
         return 0, count
     else:               # 不可调度返回 1 
-        t2 = datetime.datetime.now()
-        print('t = ', t2 - t1)
+        # t2 = datetime.datetime.now()
+        # print('t = ', t2 - t1)
         return 1, count 
