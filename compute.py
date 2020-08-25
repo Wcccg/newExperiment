@@ -81,6 +81,8 @@ def getdmax(X, D, T, n):
         m = -2
         if (X > D[i]):
             m = int((X - D[i]) / T[i]) * T[i] + D[i]
+        if m == X:
+            m -= T[i]
         dmax = max(dmax, m)
     return dmax
 
@@ -92,6 +94,8 @@ def getdmax2(X, D, T, n):
         m = -2
         if (X > D[i]):
             m = int((X - D[i]) / T[i]) * T[i] + D[i]
+            if m == X:
+                m -= T[i]
         if m > dmax:
             dmax = m
             index = i
@@ -111,7 +115,8 @@ def useQPA(C, D, T, n, dmin, L):
         else:
             t = getdmax(t, D, T, n)
         h = getH(t, C, D, T, n)
-        # print('h = ', h, 't = ', t)
+        # if count < 200:
+        #     print('h = ', h, 't = ', t)
     if h <= dmin:       # 可调度返回 0
         t2 = datetime.datetime.now()
         print('t = ', t2 - t1)
@@ -124,10 +129,10 @@ def useQPA(C, D, T, n, dmin, L):
 # 使用上界线思路进行跳转
 def useUpBound(C, D, T, n, dmin, L, sumU):
     count = 0       # 记录跳转次数
-    Dmax = -1
-    for i in range(0, n):
-        Dmax = max(Dmax, D[i])
-    print(Dmax)
+    # Dmax = -1
+    # for i in range(0, n):
+    #     Dmax = max(Dmax, D[i])
+    # print(Dmax)
     # 区间优化
     # origin = getUpBound(Dmax, C, D, T, n)
     # print('origin', origin)
@@ -158,3 +163,34 @@ def useUpBound(C, D, T, n, dmin, L, sumU):
         print('t = ', t2 - t1)
         return 1, count 
     
+def getDistance(T, C, n, dis):
+    Dis = dis
+    for i in range(0, n):
+        Dis += math.floor(dis / T[i]) * C[i]
+    return Dis
+
+# 增大跳转距离
+def useGreaterDistance(C, D, T, n, dmin, L):
+    print('L = ', L)
+    count = 0       # 记录跳转次数
+    t = getdmax(L, D, T, n)
+    h = getH(t, C, D, T, n)
+    t1 = datetime.datetime.now()
+    while (h <= t and h > dmin):
+        count = count + 1
+        if h < t:
+            dis = t - h
+            t -= getDistance(T, C, n, dis)
+        else:
+            t = getdmax(t, D, T, n)
+        h = getH(t, C, D, T, n)
+        # if count < 200:
+        #     print('h = ', h, 't = ', t)
+    if h <= dmin:       # 可调度返回 0
+        t2 = datetime.datetime.now()
+        print('t = ', t2 - t1)
+        return 0, count
+    else:               # 不可调度返回 1 
+        t2 = datetime.datetime.now()
+        print('t = ', t2 - t1)
+        return 1, count 

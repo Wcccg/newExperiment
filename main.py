@@ -10,17 +10,7 @@ if __name__ == '__main__':
     dmin = getdmin(D, T, n)
     print('dmin = ', dmin, '\n')
 
-    print('UB method:')
-    # startTime1 = datetime.datetime.now()
-    flag1, count1 = useUpBound(C, D, T, n, dmin, L, sumU)
-    # endTime1 = datetime.datetime.now()
-    if flag1 == 0:
-        print('schedulable')
-    else:
-        print('unschedulable')
-    print('count = ', count1)
-    # print('time=', endTime1 - startTime1)
-    print('\nQPA method:')
+    print('QPA method:')
 
     # startTime2 = datetime.datetime.now()
     flag2, count2 = useQPA(C, D, T, n, dmin, L)
@@ -31,5 +21,16 @@ if __name__ == '__main__':
         print('unschedulable')
     print('count = ', count2)
     # print('time=', endTime2 - startTime2, '\n')
+
+    print('\nDis method:')
+    # startTime1 = datetime.datetime.now()
+    flag1, count1 = useGreaterDistance(C, D, T, n, dmin, L)
+    # endTime1 = datetime.datetime.now()
+    if flag1 == 0:
+        print('schedulable')
+    else:
+        print('unschedulable')
+    print('count = ', count1)
+    # print('time=', endTime1 - startTime1)
 
 
