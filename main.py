@@ -6,6 +6,7 @@ from compute import *
 if __name__ == '__main__':
     n, sumU, Tmax = readbase('aurg.txt')
     C, D, T = readsample('aurg.txt')
+    task = readTask('aurg.txt')
     L = getL(C, D, T, sumU, n)
     dmin = getdmin(D, T, n)
     print('dmin = ', dmin, '\n')
@@ -24,7 +25,7 @@ if __name__ == '__main__':
 
     print('\nDis method:')
     # startTime1 = datetime.datetime.now()
-    flag1, count1 = useGreaterDistance(C, D, T, n, dmin, L)
+    flag1, count1 = useGreaterDistance(task, n, dmin, L)
     # endTime1 = datetime.datetime.now()
     if flag1 == 0:
         print('schedulable')

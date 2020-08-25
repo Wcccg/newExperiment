@@ -1,6 +1,7 @@
 import math
 import sympy
 import datetime
+import operator
 
 # L 即 Tbound
 def getL(C, D, T, sumU, n):
@@ -163,14 +164,33 @@ def useUpBound(C, D, T, n, dmin, L, sumU):
         print('t = ', t2 - t1)
         return 1, count 
     
+
 def getDistance(T, C, n, dis):
     Dis = dis
     for i in range(0, n):
         Dis += math.floor(dis / T[i]) * C[i]
+        if T[i] > dis:
+            break
     return Dis
 
+def getCDT(task, n):
+    # t1 = datetime.datetime.now()
+    cmpfun = operator.attrgetter('T')
+    task.sort(key = cmpfun)
+    C = []
+    D = []
+    T = []
+    for i in range(0, n):
+        C.append(task[i].C)
+        D.append(task[i].D)
+        T.append(task[i].T)
+    # t2 = datetime.datetime.now()
+    # print('sort time = ', t2 - t1)
+    return C, D, T
+
 # 增大跳转距离
-def useGreaterDistance(C, D, T, n, dmin, L):
+def useGreaterDistance(task, n, dmin, L):
+    C, D, T = getCDT(task, n)
     print('L = ', L)
     count = 0       # 记录跳转次数
     t = getdmax(L, D, T, n)
