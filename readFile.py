@@ -11,7 +11,10 @@ def readbase(filename):
         line = f.readline()
         line = line.split()
         for i in line:
-            base.append(int(float(i)))
+            i = float(i)
+            if i >= 1:
+                i = int(i)
+            base.append(i)
     return base
 
 

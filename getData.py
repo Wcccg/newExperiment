@@ -88,9 +88,9 @@ def writefile(filename, C, D, T, n, sumU, Tmax):
             f.write(stri)
 
 if __name__ == '__main__':
-    n = 800
-    sumU = 0.40
-    Tmax = 100000
+    n = 100
+    sumU = 0.9
+    Tmax = 10000
     U = getU(n, sumU)
     T = getT(n, Tmax)
     C, T, sumU = getC(n, U, T)
