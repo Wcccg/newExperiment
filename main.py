@@ -6,11 +6,13 @@ from compute import *
 
 if __name__ == '__main__':
 
-    nn = 60
-    sumUU = 0.9
+    nn = 50
+    sumUU = 0.8
     mul = 10000
     TTmax, TTmin = getTmax(nn, sumUU, mul)
-    percent = 0
+    spercent = 0
+    unspercent = 0
+    schedunumbers = 0
     i = 100
     while i:
         U = getU(nn, sumUU)
@@ -42,9 +44,19 @@ if __name__ == '__main__':
             t1 += endTime1 - startTime1
         # print('QPAcount = ', count2, 'time =',  t2)
         # print('Discount = ', count1, 'time =',  t1)
+        if flag1 == 0:
+            schedunumbers += 1
         if t1 < t2:
-            percent += 1
-    print('percent = ', percent, '%\n')
+            if flag1 == 0:
+                spercent += 1
+            else:
+                unspercent += 1
+    print('Percent = ', spercent + unspercent, '%')
+    print('schedunumbers = ', schedunumbers)
+    if schedunumbers != 0:
+        print('AblePercent = ', round(100 * spercent / schedunumbers, 2), '%')
+    if schedunumbers != 100:
+        print('unAblePercent = ', round(100 * unspercent / (100 - schedunumbers), 2), '%')
     # print('QPAcount = ', count2, 'time =',  t2)
     # print('Discount = ', count1, 'time =',  t1)
     # if flag1 == 0:
