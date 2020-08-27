@@ -15,7 +15,8 @@ def getU(n, USum):
 
 
 # 生成周期 bound > e
-def getT(n, bound):
+def getT(n, bound, Tmin):
+    n -= 1
     T = []
     a = math.log(bound)
     b = 0
@@ -26,34 +27,36 @@ def getT(n, bound):
         for j in range(0, math.floor(n / math.floor(a - b + 1))):
             x = math.exp(i)
             y = math.exp(i + 1)
-            T.append(int(random.uniform(x, y)))
+            T.append(int(random.uniform(x, y)) * Tmin)
         i += 1
     for j in range(0, math.floor(n / math.floor(a - b + 1))):
         x = math.exp(i)
         y = bound
-        T.append(int(random.uniform(x, y)))
+        T.append(int(random.uniform(x, y)) * Tmin)
     left = n % math.floor(a - b + 1)
     for j in range(0, left):
         x = math.exp(j)
         y = math.exp(j + 1)
-        T.append(int(random.uniform(x, y)))
+        T.append(int(random.uniform(x, y)) * Tmin)
+    T.append(int(bound * Tmin))
     return T
 
 
 # 生成执行时间，更新周期和利用率
-def getC(n, U, T):
+def getC(n, U, T, Tmax, Tmin):
     C = []
     newT = []
     sumU = 0
     for i in range(0, n):
-        u = random.uniform(0.0001, 0.0005)
-        u = max(U[i], u)
+        u = U[i]
+        u = max(u, 1 / Tmax)
+        # u = min(u, 1 / Tmin)
         c = T[i] * u
         if c > 1:
             c = math.floor(c)
         else:
             c = math.ceil(c)
-        t = math.ceil(c / u)
+        t = math.floor(c / u)
         sumU += c / t
         C.append(c)
         newT.append(t)
@@ -81,18 +84,26 @@ def getD(n, C, T):
 def writefile(filename, C, D, T, n, sumU, Tmax):
     with open(filename, 'w') as f:
         lens = len(C)
-        f.write(str(n) + ' ' + str(round(sumU, 5)) + ' ' + str(Tmax) + '\n')
+        f.write(str(n) + ' ' + str(round(sumU, 5)) + ' ' + str(max(T)) + ' ' + str(min(T)) + '\n')
         for i in range(0, lens):
-            temp = round(U[i], 5)
             stri = str(C[i]) + ' ' + str(D[i]) + ' ' + str(T[i]) + '\n'
             f.write(stri)
 
+def getTmax(n, sumU, mul):
+    u = sumU / n
+    Tmin = int(1 / u)
+    Tmax = int(Tmin * mul)
+    return Tmax, Tmin
+
 if __name__ == '__main__':
-    n = 100
-    sumU = 0.9
-    Tmax = 10000
+    n = 30
+    sumU = 0.85
+    mul = 10            # Tmax / Tmin
+    Tmax, Tmin = getTmax(n, sumU, mul)
     U = getU(n, sumU)
-    T = getT(n, Tmax)
-    C, T, sumU = getC(n, U, T)
+    T = getT(n, mul, Tmin)
+    C, T, sumU = getC(n, U, T, Tmax, Tmin)
     D = getD(n, C, T)
+    # print(Tmax, Tmin)
+    # print(max(T), min(T), sumU, max(T) / min(T))
     writefile('aurg.txt', C, D, T, n, sumU, Tmax)
