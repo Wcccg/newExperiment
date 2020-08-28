@@ -49,8 +49,8 @@ def getC(n, U, T, Tmax, Tmin):
     sumU = 0
     for i in range(0, n):
         u = U[i]
-        # u = max(u, 1 / Tmax)
-        # u = min(u, 1 / Tmin)
+        u = max(u, 1 / Tmax)
+        u = min(u, 1 / Tmin)
         c = T[i] * u
         if c > 1:
             c = math.floor(c)
@@ -91,14 +91,17 @@ def writefile(filename, C, D, T, n, sumU, Tmax):
 
 def getTmax(n, sumU, mul):
     u = sumU / n
-    Tmin = int(0.5 / u)
+    m = mul ** 0.5
+    Tmax = int(m / u)
+    Tmin = math.ceil(Tmax / mul)
+    Tmin = max(2, Tmin)
     Tmax = int(Tmin * mul)
     return Tmax, Tmin
 
 if __name__ == '__main__':
-    n = 30
-    sumU = 0.85
-    mul = 10            # Tmax / Tmin
+    n = 10
+    sumU = 0.9
+    mul = 1000          # Tmax / Tmin
     Tmax, Tmin = getTmax(n, sumU, mul)
     print(Tmax, Tmin)
     U = getU(n, sumU)
