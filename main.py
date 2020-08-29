@@ -6,18 +6,18 @@ from compute import *
 
 if __name__ == '__main__':
 
-    nn = 10
-    sumUU = 0.9
-    mul = 10
+    nn = 600
+    sumUU = 0.8
+    mul = 100
     TTmax, TTmin = getTmax(nn, sumUU, mul)
     spercent = 0
     unspercent = 0
     schedunumbers = 0
-    i = 100
     tOfQPA = datetime.datetime.now() - datetime.datetime.now()
     tOfGD = datetime.datetime.now() - datetime.datetime.now()
     tOfQPAun = datetime.datetime.now() - datetime.datetime.now()
     tOfGDun = datetime.datetime.now() - datetime.datetime.now()
+    i = 100
     while i:
         U = getU(nn, sumUU)
         T = getT(nn, mul, TTmin)
@@ -25,7 +25,7 @@ if __name__ == '__main__':
         D = getD(nn, C, T)
         writefile('aurg.txt', C, D, T, nn, sumU, TTmax)
         n, sumU, Tmax, Tmin = readbase('aurg.txt')
-        if Tmax / Tmin > 1.1 * mul or Tmax / Tmin < 0.9 * mul or sumU >= 1:
+        if sumU > 1.1 * sumUU or sumU < 0.9 * sumUU:
             continue
         else:
             i -= 1
