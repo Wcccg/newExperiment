@@ -97,14 +97,13 @@ def getTmax(n, sumU, mul):
 
 if __name__ == '__main__':
     n = 10
-    sumU = 0.9
-    mul = 10       # Tmax / Tmin
+    sumU = 0.85
+    mul = 1000       # Tmax / Tmin
     Tmax, Tmin = getTmax(n, sumU, mul)
-    print(Tmax, Tmin)
     U = getU(n, sumU)
     T = getT(n, mul, Tmin)
     C, T, sumU = getC(n, U, T, Tmax, Tmin)
     D = getD(n, C, T)
-    # print(Tmax, Tmin)
-    # print(max(T), min(T), sumU, max(T) / min(T))
+    print(Tmax, Tmin)
+    print(max(T), min(T), sumU, max(T) / min(T))
     writefile('aurg.txt', C, D, T, n, sumU, Tmax)

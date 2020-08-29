@@ -6,9 +6,9 @@ from compute import *
 
 if __name__ == '__main__':
 
-    nn = 600
-    sumUU = 0.8
-    mul = 100
+    nn = 10
+    sumUU = 0.85
+    mul = 1000
     TTmax, TTmin = getTmax(nn, sumUU, mul)
     spercent = 0
     unspercent = 0
@@ -25,7 +25,7 @@ if __name__ == '__main__':
         D = getD(nn, C, T)
         writefile('aurg.txt', C, D, T, nn, sumU, TTmax)
         n, sumU, Tmax, Tmin = readbase('aurg.txt')
-        if sumU > 1.1 * sumUU or sumU < 0.9 * sumUU:
+        if sumU > 1.1 * sumUU or sumU < 0.9 * sumUU or sumU >= 1 or Tmax /Tmin > 1.1 * mul or Tmax /Tmin < 0.9 * mul:
             continue
         else:
             i -= 1
