@@ -107,3 +107,5 @@ if __name__ == '__main__':
     print(Tmax, Tmin)
     print(max(T), min(T), sumU, max(T) / min(T))
     writefile('aurg.txt', C, D, T, n, sumU, Tmax)
+
+    
