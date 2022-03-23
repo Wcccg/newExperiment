@@ -235,4 +235,3 @@ def useGreaterDistance(task, n, dmin, L):
         # t2 = datetime.datetime.now()
         # print('t = ', t2 - t1)
         return 1, count 
-    
